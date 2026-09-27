@@ -1,0 +1,27 @@
+{
+  "name": "news-explorer-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoshuaSanchez21/news-explorer-backend.git"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/JoshuaSanchez21/news-explorer-backend/issues"
+  },
+  "homepage": "https://github.com/JoshuaSanchez21/news-explorer-backend#readme",
+  "dependencies": {
+    "express": "^5.2.1",
+    "mongoose": "^9.10.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
