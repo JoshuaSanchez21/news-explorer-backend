@@ -18,8 +18,11 @@
   },
   "homepage": "https://github.com/JoshuaSanchez21/news-explorer-backend#readme",
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "express": "^5.2.1",
-    "mongoose": "^9.10.2"
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.10.2",
+    "validator": "^13.15.35"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
