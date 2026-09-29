@@ -1,13 +1,13 @@
 const jwt = require('jsonwebtoken');
+
 const { JWT_SECRET } = require('../utils/config');
+const UnauthorizedError = require('../errors/unauthorized-error');
 
 const auth = (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    return res.status(401).send({
-      message: 'Se requiere autorización',
-    });
+    return next(new UnauthorizedError('Se requiere autorización'));
   }
 
   const token = authorization.replace('Bearer ', '');
@@ -18,10 +18,8 @@ const auth = (req, res, next) => {
     req.user = payload;
 
     return next();
-  } catch (err) {
-    return res.status(401).send({
-      message: 'Token inválido o expirado',
-    });
+  } catch {
+    return next(new UnauthorizedError('Token inválido o expirado'));
   }
 };
 

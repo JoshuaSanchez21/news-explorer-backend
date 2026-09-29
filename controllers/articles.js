@@ -1,19 +1,19 @@
 const Article = require('../models/article');
 
-const getArticles = (req, res) => {
-  Article.find({ owner: req.user._id })
-    .then((articles) => res.send(articles))
-    .catch(() => res.status(500).send({
-      message: 'Ha ocurrido un error en el servidor',
-    }));
-};
+const BadRequestError = require('../errors/bad-request-error');
+const ForbiddenError = require('../errors/forbidden-error');
+const NotFoundError = require('../errors/not-found-error');
 
-const createArticle = (req, res) => {
+const getArticles = (req, res, next) => Article.find({ owner: req.user._id })
+  .then((articles) => res.send(articles))
+  .catch(next);
+
+const createArticle = (req, res, next) => {
   const {
     keyword, title, text, date, source, link, image,
   } = req.body;
 
-  Article.create({
+  return Article.create({
     keyword,
     title,
     text,
@@ -26,47 +26,39 @@ const createArticle = (req, res) => {
     .then((article) => res.status(201).send(article))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({
-          message: 'Los datos proporcionados no son válidos',
-        });
+        return next(
+          new BadRequestError('Los datos proporcionados no son válidos'),
+        );
       }
 
-      return res.status(500).send({
-        message: 'Ha ocurrido un error en el servidor',
-      });
+      return next(err);
     });
 };
 
-const deleteArticle = (req, res) => {
+const deleteArticle = (req, res, next) => {
   const { articleId } = req.params;
 
-  Article.findById(articleId)
+  return Article.findById(articleId)
     .then((article) => {
       if (!article) {
-        return res.status(404).send({
-          message: 'Artículo no encontrado',
-        });
+        throw new NotFoundError('Artículo no encontrado');
       }
 
       if (article.owner.toString() !== req.user._id) {
-        return res.status(403).send({
-          message: 'No tienes permiso para eliminar este artículo',
-        });
+        throw new ForbiddenError(
+          'No tienes permiso para eliminar este artículo',
+        );
       }
 
-      return Article.findByIdAndDelete(articleId)
-        .then((deletedArticle) => res.send(deletedArticle));
+      return Article.findByIdAndDelete(articleId);
     })
+    .then((article) => res.send(article))
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(400).send({
-          message: 'ID de artículo no válido',
-        });
+        return next(new BadRequestError('ID de artículo no válido'));
       }
 
-      return res.status(500).send({
-        message: 'Ha ocurrido un error en el servidor',
-      });
+      return next(err);
     });
 };
 

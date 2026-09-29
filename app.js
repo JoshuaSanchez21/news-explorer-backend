@@ -7,6 +7,9 @@ const auth = require('./middlewares/auth');
 
 const articlesRouter = require('./routes/articles');
 
+const NotFoundError = require('./errors/not-found-error');
+const errorHandler = require('./middlewares/error-handler');
+
 const app = express();
 
 const { PORT = 3000 } = process.env;
@@ -29,10 +32,14 @@ app.get('/', (req, res) => {
 app.post('/signup', createUser);
 app.post('/signin', login);
 
-app.use(auth);
+app.use('/users', auth, usersRouter);
+app.use('/articles', auth, articlesRouter);
 
-app.use('/users', usersRouter);
-app.use('/articles', articlesRouter);
+app.use((req, res, next) => {
+  next(new NotFoundError('Recurso solicitado no encontrado'));
+});
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
