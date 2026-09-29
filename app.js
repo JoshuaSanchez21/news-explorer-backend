@@ -10,6 +10,12 @@ const articlesRouter = require('./routes/articles');
 const NotFoundError = require('./errors/not-found-error');
 const errorHandler = require('./middlewares/error-handler');
 
+const { signupSchema, signinSchema } = require('./validators/schemas');
+
+const { validateBody } = require('./middlewares/validation');
+
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+
 const app = express();
 
 const { PORT = 3000 } = process.env;
@@ -25,12 +31,14 @@ mongoose
 
 app.use(express.json());
 
+app.use(requestLogger);
+
 app.get('/', (req, res) => {
   res.send('News Explorer API is running');
 });
 
-app.post('/signup', createUser);
-app.post('/signin', login);
+app.post('/signup', validateBody(signupSchema), createUser);
+app.post('/signin', validateBody(signinSchema), login);
 
 app.use('/users', auth, usersRouter);
 app.use('/articles', auth, articlesRouter);
@@ -39,6 +47,7 @@ app.use((req, res, next) => {
   next(new NotFoundError('Recurso solicitado no encontrado'));
 });
 
+app.use(errorLogger);
 app.use(errorHandler);
 
 app.listen(PORT, () => {
