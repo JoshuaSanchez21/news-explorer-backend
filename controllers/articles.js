@@ -23,7 +23,13 @@ const createArticle = (req, res, next) => {
     image,
     owner: req.user._id,
   })
-    .then((article) => res.status(201).send(article))
+    .then((article) => {
+      const articleData = article.toObject();
+
+      delete articleData.owner;
+
+      return res.status(201).send(articleData);
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return next(
