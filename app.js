@@ -1,18 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
-const usersRouter = require('./routes/users');
-const { createUser, login } = require('./controllers/users');
-const auth = require('./middlewares/auth');
-
-const articlesRouter = require('./routes/articles');
+const router = require('./routes');
+const { MONGODB_URI } = require('./utils/config');
 
 const NotFoundError = require('./errors/not-found-error');
 const errorHandler = require('./middlewares/error-handler');
-
-const { signupSchema, signinSchema } = require('./validators/schemas');
-
-const { validateBody } = require('./middlewares/validation');
 
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
@@ -21,7 +14,7 @@ const app = express();
 const { PORT = 3000 } = process.env;
 
 mongoose
-  .connect('mongodb://127.0.0.1:27017/news-explorer')
+  .connect(MONGODB_URI)
   .then(() => {
     console.log('Connected to MongoDB');
   })
@@ -37,11 +30,7 @@ app.get('/', (req, res) => {
   res.send('News Explorer API is running');
 });
 
-app.post('/signup', validateBody(signupSchema), createUser);
-app.post('/signin', validateBody(signinSchema), login);
-
-app.use('/users', auth, usersRouter);
-app.use('/articles', auth, articlesRouter);
+app.use(router);
 
 app.use((req, res, next) => {
   next(new NotFoundError('Recurso solicitado no encontrado'));
