@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-
+const cors = require('cors');
 const router = require('./routes');
 const { MONGODB_URI } = require('./utils/config');
 
@@ -22,6 +22,7 @@ mongoose
     console.error('MongoDB connection error:', err);
   });
 
+app.use(cors());
 app.use(express.json());
 
 app.use(requestLogger);

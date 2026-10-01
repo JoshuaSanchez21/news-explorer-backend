@@ -20,6 +20,7 @@
   "homepage": "https://github.com/JoshuaSanchez21/news-explorer-backend#readme",
   "dependencies": {
     "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
     "express": "^5.2.1",
     "express-winston": "^4.2.0",
     "joi": "^18.2.9",
